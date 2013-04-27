@@ -5,9 +5,8 @@
 package lgtts
 
 import (
-	"database/sql"
 	"github.com/bmizerany/pq"
-	"github.com/coopernurse/gorp"
+	"github.com/coocood/qbs"
 	"github.com/darkhelmet/env"
 	"log"
 	"os"
@@ -31,9 +30,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db, err := sql.Open("postgres", dsn)
+	srv.DataSourceName = dsn
+	srv.DriverName = "postgres"
+	srv.Dialect = qbs.NewPostgres()
+	err = srv.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-	srv.DbMap = &gorp.DbMap{Db: db, Dialect: gorp.PostgresDialect{}}
 }

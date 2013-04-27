@@ -8,7 +8,8 @@ package lgtts
 import (
 	// "code.google.com/p/go-uuid/uuid"
 	"database/sql"
-	"github.com/coopernurse/gorp"
+	// "github.com/coopernurse/gorp"
+	"github.com/coocood/qbs"
 	"log"
 	"time"
 )
@@ -20,13 +21,23 @@ NOTES:
 
 */
 
-func NewServer(db *sql.DB) *Server {
-	return nil
+type Server struct {
+	DriverName     string
+	DataSourceName string
+	Dialect        qbs.Dialect
+	Logger         *log.Logger
 }
 
-type Server struct {
-	DbMap  *gorp.DbMap
-	Logger *log.Logger
+func (srv *Server) Qbs() (*qbs.Qbs) {
+	//Try to get a free DB connection from the pool
+	db := qbs.GetFreeDB()
+	var err error
+	if db == nil { // connection pool is empty
+		//open a new one.
+		db, err = sql.Open(srv.DriverName, srv.DataSourceName)
+	}
+	log.Fatal(err)
+	return qbs.New(db, srv.Dialect)
 }
 
 // NewArtist creates a new Arist record.  Email must be unique.
