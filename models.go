@@ -7,6 +7,7 @@ package lgtts
 
 import (
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/coocood/qbs"
 	"time"
 )
 
@@ -28,6 +29,7 @@ type Artist struct {
 type Show struct {
 	Id          int64
 	Artist      *Artist
+	ArtistId    int64
 	Time        time.Time
 	Venue       string
 	Zip         string // Venue zip code
@@ -40,6 +42,7 @@ type Show struct {
 type Patron struct {
 	Id      int64
 	Artist  *Artist
+	ArtistId    int64
 	Email   string
 	Zip     string
 	Created time.Time // Record creation date
@@ -53,6 +56,7 @@ type Payment string
 type Blast struct {
 	Id      int64
 	Artist  *Artist
+	ArtistId    int64
 	Show    *Show
 	Max     int       // Max Patrons to notify - unlimited if 0
 	RunDate time.Time // Date on which to send this blast
@@ -70,4 +74,38 @@ type Notification struct {
 	Patron *Patron
 	Sent   *time.Time
 	Token  *uuid.UUID
+}
+
+var tables = []interface{}{
+	&Artist{},
+	&Show{},
+}
+
+// MigrateTables will attempt to migrate the database to the current schema,
+// creating tables that do not exist, and adding columns to those that do.
+// Only additive operations are supported - it will not alter or delete columns
+// - so it should be safe for production. Will panic if it can't migrate a
+// table, or return an error if it cannot create a necessary index.
+func (srv *Server) MigrateTables() error {
+	q := srv.Qbs()
+	m := qbs.NewMigration(q.Db, srv.DbName, q.Dialect)
+	for _, t := range tables {
+		err := m.CreateTableIfNotExists(t)
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
+// dropTables drops all tables.  It can ONLY be used on databases whose
+// names end in "_test".
+func (srv *Server) dropTables() error {
+	q := srv.Qbs()
+	m := qbs.NewMigration(q.Db, srv.DbName, q.Dialect)
+	for _, t := range tables {
+		m.DropTable(t)
+	}
+	return nil
 }

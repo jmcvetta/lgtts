@@ -5,14 +5,16 @@
 package lgtts
 
 import (
+	"github.com/bmizerany/assert"
 	"github.com/bmizerany/pq"
 	"github.com/coocood/qbs"
 	"github.com/darkhelmet/env"
 	"log"
 	"os"
+	"testing"
 )
 
-func main() {
+func setup(t *testing.T) *Server {
 	srv := Server{}
 	//
 	// Logging
@@ -28,13 +30,53 @@ func main() {
 	//
 	dsn, err := pq.ParseURL(dbUrl)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 	srv.DataSourceName = dsn
 	srv.DriverName = "postgres"
+	srv.DbName = "lgtts_test"
 	srv.Dialect = qbs.NewPostgres()
-	err = srv.Run()
+	err = srv.dropTables()
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
+	err = srv.MigrateTables()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &srv
+}
+
+func TestNewArtist(t *testing.T) {
+	srv := setup(t)
+	name := "James T Kirk"
+	email := "captain@enterprise.gov"
+	//
+	// Create a new artist
+	//
+	a0, err := srv.NewArtist(name, email)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.NotEqual(t, a0.Id, 0)
+	assert.Equal(t, a0.Name, name)
+	assert.Equal(t, a0.Email, email)
+	//
+	// Confirm DB record
+	//
+	q := srv.Qbs()
+	a1 := new(Artist)
+	a1.Name = name
+	a1.Email = email
+	err = q.Find(a1)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, a1.Id, a0.Id)
+	//
+	// Try to use duplicate email
+	//
+	_, err = srv.NewArtist(name, email)
+	assert.NotEqual(t, err, nil)
+
 }

@@ -24,11 +24,12 @@ NOTES:
 type Server struct {
 	DriverName     string
 	DataSourceName string
+	DbName         string
 	Dialect        qbs.Dialect
 	Logger         *log.Logger
 }
 
-func (srv *Server) Qbs() (*qbs.Qbs) {
+func (srv *Server) Qbs() *qbs.Qbs {
 	//Try to get a free DB connection from the pool
 	db := qbs.GetFreeDB()
 	var err error
@@ -36,13 +37,33 @@ func (srv *Server) Qbs() (*qbs.Qbs) {
 		//open a new one.
 		db, err = sql.Open(srv.DriverName, srv.DataSourceName)
 	}
-	log.Fatal(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return qbs.New(db, srv.Dialect)
 }
 
 // NewArtist creates a new Arist record.  Email must be unique.
 func (srv *Server) NewArtist(name, email string) (*Artist, error) {
-	return nil, nil
+	q := srv.Qbs()
+	//
+	// Check for duplicate email
+	//
+	a := new(Artist)
+	a.Email = email
+	err := q.Find(a)
+	if err == nil {
+		return a, EmailAlreadyRegistered
+	}
+	if err != sql.ErrNoRows {
+		return a, err
+	}
+	//
+	// Create new record
+	//
+	a.Name = name
+	_, err = q.Save(a)
+	return a, err
 }
 
 // UpdateArtist saves changes to an Artist profile.
