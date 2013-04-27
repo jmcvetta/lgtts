@@ -14,19 +14,21 @@ import (
 // wants to hold well-attended public events.
 type Artist struct {
 	Id            int64
-	Name          string
-	Email         string
+	Name          string `qbs:"index,notnull"`
+	Email         string `qbs:"index,unique,notnull"`
 	HomeTown      string
 	HomeZip       string
 	Description   string
 	StormpathHref string
+	Updated       time.Time
+	Created       time.Time
 }
 
 // A Show is a public event such as a concert, art show, play, etc.
 type Show struct {
 	Id          int64
 	Artist      *Artist
-	Time        *time.Time
+	Time        time.Time
 	Venue       string
 	Zip         string // Venue zip code
 	Price       float32
@@ -40,8 +42,8 @@ type Patron struct {
 	Artist  *Artist
 	Email   string
 	Zip     string
-	Created *time.Time // Record creation date
-	Referer string     // Referer URL
+	Created time.Time // Record creation date
+	Referer string    // Referer URL
 }
 
 // A Payment is a reference to a payments model TBD.
@@ -52,12 +54,12 @@ type Blast struct {
 	Id      int64
 	Artist  *Artist
 	Show    *Show
-	Max     int        // Max Patrons to notify - unlimited if 0
-	RunDate *time.Time // Date on which to send this blast
+	Max     int       // Max Patrons to notify - unlimited if 0
+	RunDate time.Time // Date on which to send this blast
 	Payment *Payment
-	Start   *time.Time
-	Finish  *time.Time
-	Confirm *time.Time // Confirmation email sent to Artist
+	Start   time.Time
+	Finish  time.Time
+	Confirm time.Time // Confirmation email sent to Artist
 }
 
 // A Notification is an email message sent to a Patron notifying them of a Show.

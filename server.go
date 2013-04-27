@@ -7,6 +7,9 @@ package lgtts
 
 import (
 	// "code.google.com/p/go-uuid/uuid"
+	"database/sql"
+	"github.com/coopernurse/gorp"
+	"log"
 	"time"
 )
 
@@ -17,39 +20,61 @@ NOTES:
 
 */
 
-type Storage interface {
-	// NewArtist creates a new Arist record.  Name and email must be unique.
-	NewArtist(name, email string) (*Artist, error)
-
-	// UpdateArtist saves changes to an Artist profile.
-	UpdateArtist(a *Artist) error
-
-	// DeleteArtist removes an artist's profile and all their patrons.
-	DeleteArtist(a *Artist) error
-
-	// Register signs up a user to receive emails when the artist has a show
-	// near their zipcode.
-	AddPatron(artist int64, email, zip string) error
-
-	// DeletePatron stops future notifications for a given patronage.
-	DeletePatron(p *Patron) error
-
-	// DeleteEmail stops ALL future notifications to a given email.
-	DeleteEmail(email string) error
-
-	// NewBlast creates a new Blast job to be processed by blast worker
-	NewBlast(s *Show, max int, date *time.Time, p *Payment) (*Blast, error)
-
-	// SendBlast sends a blast of email notifications.
-	SendBlast(b *Blast) (sent int, err error)
-}
-
-type Notifier interface {
-	// Notify sends an email notification
-	Notify(s *Show, p *Patron) error
+func NewServer(db *sql.DB) *Server {
+	return nil
 }
 
 type Server struct {
-	Storage
-	Notifier
+	DbMap  *gorp.DbMap
+	Logger *log.Logger
+}
+
+// NewArtist creates a new Arist record.  Email must be unique.
+func (srv *Server) NewArtist(name, email string) (*Artist, error) {
+	return nil, nil
+}
+
+// UpdateArtist saves changes to an Artist profile.
+func (srv *Server) UpdateArtist(a *Artist) error {
+	return nil
+}
+
+// DeleteArtist removes an artist's profile and all their patrons.
+func (srv *Server) DeleteArtist(a *Artist) error {
+	return nil
+}
+
+// Register signs up a user to receive emails when the artist has a show
+// near their zipcode.
+func (srv *Server) AddPatron(artist int64, email, zip string) error {
+	return nil
+}
+
+// DeletePatron stops future notifications for a given patronage.
+func (srv *Server) DeletePatron(p *Patron) error {
+	return nil
+}
+
+// DeleteEmail stops ALL future notifications to a given email.
+func (srv *Server) DeleteEmail(email string) error {
+	return nil
+}
+
+// NewBlast creates a new Blast job to be processed by blast worker
+func (srv *Server) NewBlast(s *Show, max int, date *time.Time, p *Payment) (*Blast, error) {
+	return nil, nil
+}
+
+// SendBlast sends a blast of email notifications.
+func (srv *Server) SendBlast(b *Blast) (sent int, err error) {
+	return 0, nil
+}
+
+// Run starts background workers.
+func (srv *Server) Run() error {
+	return nil
+}
+
+func (srv *Server) Notify(s *Show, p *Patron) error {
+	return nil
 }
