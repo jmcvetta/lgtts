@@ -78,5 +78,27 @@ func TestNewArtist(t *testing.T) {
 	//
 	_, err = srv.NewArtist(name, email)
 	assert.NotEqual(t, err, nil)
+}
+
+func TestGetArtist(t *testing.T) {
+	srv := setup(t)
+	name := "James T Kirk"
+	email := "captain@enterprise.gov"
+	a0, _ := srv.NewArtist(name, email)
+	a1, err := srv.GetArtist(email)
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, a0.Id, a1.Id)
+	assert.Equal(t, a0.Name, a1.Name)
+	assert.Equal(t, a0.Email, a1.Email)
+}
+
+/*
+func TestUpdateArtist(t *testing.T) {
+	srv := setup(t)
+	name := "James T Kirk"
+	email := "captain@enterprise.gov"
 
 }
+*/

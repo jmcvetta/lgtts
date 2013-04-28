@@ -40,13 +40,13 @@ type Show struct {
 // A Patron is a fan, patron, or other person who wants to be notified about
 // upcoming Shows.
 type Patron struct {
-	Id      int64
-	Artist  *Artist
-	ArtistId    int64
-	Email   string
-	Zip     string
-	Created time.Time // Record creation date
-	Referer string    // Referer URL
+	Id       int64
+	Artist   *Artist
+	ArtistId int64
+	Email    string
+	Zip      string
+	Created  time.Time // Record creation date
+	Referer  string    // Referer URL
 }
 
 // A Payment is a reference to a payments model TBD.
@@ -54,16 +54,16 @@ type Payment string
 
 // A Blast is an email blast of Notifications for a given show
 type Blast struct {
-	Id      int64
-	Artist  *Artist
-	ArtistId    int64
-	Show    *Show
-	Max     int       // Max Patrons to notify - unlimited if 0
-	RunDate time.Time // Date on which to send this blast
-	Payment *Payment
-	Start   time.Time
-	Finish  time.Time
-	Confirm time.Time // Confirmation email sent to Artist
+	Id       int64
+	Artist   *Artist
+	ArtistId int64
+	Show     *Show
+	Max      int       // Max Patrons to notify - unlimited if 0
+	RunDate  time.Time // Date on which to send this blast
+	Payment  *Payment
+	Start    time.Time
+	Finish   time.Time
+	Confirm  time.Time // Confirmation email sent to Artist
 }
 
 // A Notification is an email message sent to a Patron notifying them of a Show.

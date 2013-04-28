@@ -46,6 +46,7 @@ func (srv *Server) Qbs() *qbs.Qbs {
 // NewArtist creates a new Arist record.  Email must be unique.
 func (srv *Server) NewArtist(name, email string) (*Artist, error) {
 	q := srv.Qbs()
+	defer q.Close()
 	//
 	// Check for duplicate email
 	//
@@ -66,14 +67,29 @@ func (srv *Server) NewArtist(name, email string) (*Artist, error) {
 	return a, err
 }
 
+// GetArtist retrieves an artist's profile.
+func (srv *Server) GetArtist(email string) (*Artist, error) {
+	q := srv.Qbs()
+	defer q.Close()
+	a := new(Artist)
+	err := q.Find(a)
+	return a, err
+}
+
 // UpdateArtist saves changes to an Artist profile.
 func (srv *Server) UpdateArtist(a *Artist) error {
-	return nil
+	q := srv.Qbs()
+	defer q.Close()
+	_, err := q.Save(a)
+	return err
 }
 
 // DeleteArtist removes an artist's profile and all their patrons.
 func (srv *Server) DeleteArtist(a *Artist) error {
-	return nil
+	q := srv.Qbs()
+	defer q.Close()
+	_, err := q.Delete(a)
+	return err
 }
 
 // Register signs up a user to receive emails when the artist has a show
