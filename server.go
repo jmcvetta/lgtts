@@ -92,10 +92,25 @@ func (srv *Server) DeleteArtist(a *Artist) error {
 	return err
 }
 
-// Register signs up a user to receive emails when the artist has a show
+// NewPatron signs up a user to receive emails when the artist has a show
 // near their zipcode.
-func (srv *Server) AddPatron(artist int64, email, zip string) error {
-	return nil
+func (srv *Server) NewPatron(artist int64, email, zip string) (*Patron, error) {
+	q := srv.Qbs()
+	defer q.Close()
+	p := &Patron{
+		Email: email,
+		Zip: zip,
+		ArtistId: artist,
+	}
+	err := q.Find(p)
+	if err == nil {
+		return p, AlreadyPatron
+	}
+	if err != sql.ErrNoRows {
+		return p, err
+	}
+	_, err = q.Save(p)
+	return p, err
 }
 
 // DeletePatron stops future notifications for a given patronage.

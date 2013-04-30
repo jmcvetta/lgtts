@@ -8,4 +8,5 @@ import "errors"
 
 var (
 	EmailAlreadyRegistered = errors.New("Email address is already registered.")
+	AlreadyPatron = errors.New("Email is already registered as a patron of Artist in Zip code.")
 )
