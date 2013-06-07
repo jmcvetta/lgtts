@@ -2,7 +2,7 @@
 // terms of the AGPL v3.  See www.gnu.org/licenses/agpl-3.0.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-package main
+package lgtts
 
 import (
 	"errors"

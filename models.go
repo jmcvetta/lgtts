@@ -2,8 +2,7 @@
 // terms of the AGPL v3.  See www.gnu.org/licenses/agpl-3.0.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-// Package lgtts is Let's Go to the Show!
-package main
+package lgtts
 
 import (
 	"time"
