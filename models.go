@@ -3,11 +3,9 @@
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
 // Package lgtts is Let's Go to the Show!
-package lgtts
+package main
 
 import (
-	"code.google.com/p/go-uuid/uuid"
-	"github.com/coocood/qbs"
 	"time"
 )
 
@@ -15,10 +13,10 @@ import (
 // wants to hold well-attended public events.
 type Artist struct {
 	Id            int64
-	Name          string `qbs:"index,notnull"`
-	Email         string `qbs:"index,unique,notnull"`
-	HomeTown      string
-	HomeZip       string
+	Name          string
+	Email         string
+	Hometown      string
+	Zip           string // Artist hometown zip
 	Description   string
 	StormpathHref string
 	Updated       time.Time
@@ -28,25 +26,27 @@ type Artist struct {
 // A Show is a public event such as a concert, art show, play, etc.
 type Show struct {
 	Id          int64
-	Artist      *Artist
 	ArtistId    int64
 	Time        time.Time
 	Venue       string
+	Address     string // Venue street address
+	City        string // Venue city
+	State       string // Venue state
 	Zip         string // Venue zip code
-	Price       float32
+	Price       string // Should include currency
 	Description string
 }
 
 // A Patron is a fan, patron, or other person who wants to be notified about
 // upcoming Shows.
 type Patron struct {
-	Id       int64
-	Artist   *Artist
-	ArtistId int64
-	Email    string
-	Zip      string
-	Created  time.Time // Record creation date
-	Referer  string    // Referer URL
+	Id        int64
+	ArtistId  int64
+	Email     string
+	Zip       string
+	Created   time.Time // Record creation date
+	Referer   string    // Referer URL
+	Confirmed bool
 }
 
 // A Payment is a reference to a payments model TBD.
@@ -55,12 +55,10 @@ type Payment string
 // A Blast is an email blast of Notifications for a given show
 type Blast struct {
 	Id       int64
-	Artist   *Artist
 	ArtistId int64
-	Show     *Show
-	Max      int       // Max Patrons to notify - unlimited if 0
+	ShowId   int64
+	Max      int64     // Max Patrons to notify - unlimited if 0
 	RunDate  time.Time // Date on which to send this blast
-	Payment  *Payment
 	Start    time.Time
 	Finish   time.Time
 	Confirm  time.Time // Confirmation email sent to Artist
@@ -68,44 +66,9 @@ type Blast struct {
 
 // A Notification is an email message sent to a Patron notifying them of a Show.
 type Notification struct {
-	Id     int64
-	Show   *Show
-	Blast  *Blast
-	Patron *Patron
-	Sent   *time.Time
-	Token  *uuid.UUID
-}
-
-var tables = []interface{}{
-	&Artist{},
-	&Show{},
-}
-
-// MigrateTables will attempt to migrate the database to the current schema,
-// creating tables that do not exist, and adding columns to those that do.
-// Only additive operations are supported - it will not alter or delete columns
-// - so it should be safe for production. Will panic if it can't migrate a
-// table, or return an error if it cannot create a necessary index.
-func (srv *Server) MigrateTables() error {
-	q := srv.Qbs()
-	m := qbs.NewMigration(q.Db, srv.DbName, q.Dialect)
-	for _, t := range tables {
-		err := m.CreateTableIfNotExists(t)
-		if err != nil {
-			return err
-		}
-
-	}
-	return nil
-}
-
-// dropTables drops all tables.  It can ONLY be used on databases whose
-// names end in "_test".
-func (srv *Server) dropTables() error {
-	q := srv.Qbs()
-	m := qbs.NewMigration(q.Db, srv.DbName, q.Dialect)
-	for _, t := range tables {
-		m.DropTable(t)
-	}
-	return nil
+	Id       int64
+	ShowId   int64
+	BlastId  int64
+	PatronId int64
+	Sent     time.Time
 }

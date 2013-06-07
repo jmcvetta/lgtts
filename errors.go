@@ -2,11 +2,13 @@
 // terms of the AGPL v3.  See www.gnu.org/licenses/agpl-3.0.html for details.
 // Resist intellectual serfdom - the ownership of ideas is akin to slavery.
 
-package lgtts
+package main
 
 import "errors"
 
 var (
 	EmailAlreadyRegistered = errors.New("Email address is already registered.")
-	AlreadyPatron = errors.New("Email is already registered as a patron of Artist in Zip code.")
+	AlreadyPatron          = errors.New("Email is already registered as a patron of Artist in Zip code.")
+	NotFound               = errors.New("Object not found")
+	InvalidZip             = errors.New("Invalid zip code")
 )
