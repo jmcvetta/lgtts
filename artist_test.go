@@ -22,7 +22,7 @@ func TestNewArtist(t *testing.T) {
 		Email:       email,
 		Hometown:    "NYC",
 		Zip:         "11011",
-		Description: "Pretty fucking cool",
+		Description: "Pretty fuckin' cool",
 	}
 	url := hserv.URL + "/api/v1/artist"
 	rr := restclient.RequestResponse{
