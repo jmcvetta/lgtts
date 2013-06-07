@@ -55,4 +55,3 @@ func NewWebService() *restful.WebService {
 		Reads(artistRequest{}))
 	return &ws
 }
-

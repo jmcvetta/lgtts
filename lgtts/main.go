@@ -7,8 +7,8 @@ package main
 
 import (
 	"github.com/darkhelmet/env"
-	"github.com/jmcvetta/lgtts"
 	restful "github.com/emicklei/go-restful"
+	"github.com/jmcvetta/lgtts"
 	"log"
 	"net/http"
 )
