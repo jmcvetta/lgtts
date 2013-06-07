@@ -28,7 +28,7 @@ func TestNewArtist(t *testing.T) {
 	rr := restclient.RequestResponse{
 		Url:            url,
 		Method:         "POST",
-		Data:           payload,
+		Data:           &payload,
 		ExpectedStatus: 200,
 	}
 	_, err := restclient.Do(&rr)
@@ -45,10 +45,19 @@ func TestNewArtist(t *testing.T) {
 	}
 	assert.Equal(t, int64(1), cnt, "One and only one artist with this email.")
 	//
-	// Try to use duplicate email
+	// Create with invalid request
 	//
+	rr = restclient.RequestResponse{
+		Url:            url,
+		Method:         "POST",
+		Data:           "foobar",
+		ExpectedStatus: 400,
+	}
 	_, err = restclient.Do(&rr)
 	if err != nil {
 		t.Fatal(err)
 	}
+	//
+	// Try to use duplicate email
+	//
 }
