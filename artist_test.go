@@ -7,31 +7,40 @@ package lgtts
 import (
 	"github.com/bmizerany/assert"
 	"github.com/jmcvetta/restclient"
+	"net/http/httptest"
 	"testing"
 )
+
+var ggEmail = "jason.mcvetta+test-gg.allin@gmail.com"
+var ggAllin = ArtistRequest{
+	Name:        "GG Allin",
+	Email:       ggEmail,
+	Hometown:    "NYC",
+	Zip:         "11011",
+	Description: "Pretty fuckin' cool",
+}
+
+func newArtist(hserv *httptest.Server) (*Artist, error) {
+	url := hserv.URL + "/api/v1/artists"
+	a := Artist{}
+	rr := restclient.RequestResponse{
+		Url:            url,
+		Method:         "POST",
+		Data:           &ggAllin,
+		Result:         &a,
+		ExpectedStatus: 200,
+	}
+	_, err := restclient.Do(&rr)
+	return &a, err
+}
 
 func TestNewArtist(t *testing.T) {
 	hserv := setupTest(t)
 	defer hserv.Close()
-	email := "jason.mcvetta+test-gg.allin@gmail.com"
 	//
 	// Create a new artist
 	//
-	payload := artistRequest{
-		Name:        "GG Allin",
-		Email:       email,
-		Hometown:    "NYC",
-		Zip:         "11011",
-		Description: "Pretty fuckin' cool",
-	}
-	url := hserv.URL + "/api/v1/artist"
-	rr := restclient.RequestResponse{
-		Url:            url,
-		Method:         "POST",
-		Data:           &payload,
-		ExpectedStatus: 200,
-	}
-	_, err := restclient.Do(&rr)
+	_, err := newArtist(hserv)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +48,7 @@ func TestNewArtist(t *testing.T) {
 	// Confirm DB record
 	//
 	query := "SELECT COUNT(*) FROM artist WHERE email=$1"
-	cnt, err := dbmap.SelectInt(query, email)
+	cnt, err := dbmap.SelectInt(query, ggEmail)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,8 +56,8 @@ func TestNewArtist(t *testing.T) {
 	//
 	// Create with invalid request
 	//
-	rr = restclient.RequestResponse{
-		Url:            url,
+	rr := restclient.RequestResponse{
+		Url:            hserv.URL + "/api/v1/artists",
 		Method:         "POST",
 		Data:           "foobar",
 		ExpectedStatus: 400,

@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-type artistRequest struct {
+type ArtistRequest struct {
 	Name        string
 	Email       string
 	Hometown    string
@@ -19,8 +19,9 @@ type artistRequest struct {
 	Description string
 }
 
+// createArtist handles a request to create a new Artist.
 func createArtist(req *restful.Request, resp *restful.Response) {
-	ar := artistRequest{}
+	ar := ArtistRequest{}
 	err := req.ReadEntity(&ar)
 	if err != nil {
 		resp.WriteError(http.StatusBadRequest, err)
@@ -38,6 +39,7 @@ func createArtist(req *restful.Request, resp *restful.Response) {
 		resp.WriteError(http.StatusBadRequest, err)
 		return
 	}
+	resp.WriteEntity(a)
 }
 
 // artistByEmail retrieves an artist's profile.
