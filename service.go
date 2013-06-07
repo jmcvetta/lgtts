@@ -55,6 +55,7 @@ func NewWebService() *restful.WebService {
 		Reads(ArtistRequest{}))
 	ws.Route(ws.POST("/artists/{artist-id}/patrons").To(patronize).
 		Doc("Patronize an artist").
+		Param(ws.BodyParameter("artist-id", "artist identifier").DataType("int")).
 		Reads(PatronageRequest{}))
 	return &ws
 }
