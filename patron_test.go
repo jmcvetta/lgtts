@@ -25,8 +25,8 @@ func TestNewPatron(t *testing.T) {
 		Email: "jason.mcvetta+lgtts-patronize@gmail.com",
 		Zip:   "94102",
 	}
-	url := hserv.URL + "/api/v1/artists/" + strconv.Itoa(int(a.Id)) + "/patrons"
 	p := Patron{}
+	url := hserv.URL + "/api/v1/artists/" + strconv.Itoa(int(a.Id)) + "/patrons"
 	rr := restclient.RequestResponse{
 		Url:            url,
 		Method:         "POST",
@@ -35,6 +35,49 @@ func TestNewPatron(t *testing.T) {
 		ExpectedStatus: 200,
 	}
 	_, err := restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	//
+	// Invalid payload
+	//
+	rr = restclient.RequestResponse{
+		Url:            url,
+		Method:         "POST",
+		Data:           "foobar",
+		Result:         &p,
+		ExpectedStatus: 400,
+	}
+	_, err = restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	//
+	// Invalid artist id
+	//
+	rr = restclient.RequestResponse{
+		Url:            hserv.URL + "/api/v1/artists/foobar/patrons",
+		Method:         "POST",
+		Data:           payload,
+		Result:         &p,
+		ExpectedStatus: 400,
+	}
+	_, err = restclient.Do(&rr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	//
+	// Bad zip code
+	//
+	payload.Zip = "foobar"
+	rr = restclient.RequestResponse{
+		Url:            url,
+		Method:         "POST",
+		Data:           payload,
+		Result:         &p,
+		ExpectedStatus: 400,
+	}
+	_, err = restclient.Do(&rr)
 	if err != nil {
 		t.Fatal(err)
 	}
