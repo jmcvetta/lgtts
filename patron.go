@@ -34,7 +34,7 @@ func patronize(req *restful.Request, resp *restful.Response) {
 	//
 	idx := validZip.FindStringIndex(pr.Zip)
 	if idx == nil {
-		log.Println("Invalid zip code ", pr.Zip)
+		log.Println("Invalid zip code:", pr.Zip)
 		resp.WriteError(http.StatusBadRequest, err)
 		return
 	}
