@@ -50,8 +50,11 @@ func NewWebService() *restful.WebService {
 	ws.Path("/api/v1").
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON, restful.MIME_XML)
-	ws.Route(ws.POST("/artist").To(createArtist).
+	ws.Route(ws.POST("/artists").To(createArtist).
 		Doc("Create a new Arist").
-		Reads(artistRequest{}))
+		Reads(ArtistRequest{}))
+	ws.Route(ws.POST("/artists/{artist-id}/patrons").To(patronize).
+		Doc("Patronize an artist").
+		Reads(PatronageRequest{}))
 	return &ws
 }
